@@ -16,13 +16,13 @@ public:
     void reset();
     void insert(const std::string& key, const ValueType& value);
     std::vector<ValueType> find(const std::string key, bool exactMatchOnly) const;
-
-      // C++11 syntax for preventing copying and assignment
+    
+    // C++11 syntax for preventing copying and assignment
     Trie(const Trie&) = delete;
     Trie& operator=(const Trie&) = delete;
     
     void dump();//REMOVE, I REPEAT: REMOVE
-
+    
 private:
     
     struct Node
@@ -35,8 +35,8 @@ private:
     };
     
     void FreeTree (Node* cur); //Used to delete all nodes in the tree
-    Node* findInsertionPoint(std::string &key, Node* parent);
-    std::vector<ValueType> findHelper(std::string key, bool exactMatchOnly, Node* parent) const;
+    Node* findInsertionPoint(std::string &key, Node* parent, int pos);
+    std::vector<ValueType> findHelper(std::string key, bool exactMatchOnly, Node* parent, std::vector<ValueType> &ir, int pos) const;
     
     Node* root;
     
@@ -48,7 +48,7 @@ template<typename ValueType>
 Trie<ValueType>::Trie()
 {
     root = new Node();
-    root->label = 'r';
+    //root->label = 'r'; //DELETE
     allNodes.push_back(root);
 }
 
@@ -90,7 +90,7 @@ void Trie<ValueType>::reset()
 }
 
 template<typename ValueType>
-typename Trie<ValueType>::Node* Trie<ValueType>::findInsertionPoint(std::string &key, Node* parent)
+typename Trie<ValueType>::Node* Trie<ValueType>::findInsertionPoint(std::string &key, Node* parent, int pos)
 {
     
     
@@ -101,7 +101,7 @@ typename Trie<ValueType>::Node* Trie<ValueType>::findInsertionPoint(std::string 
         {
             key = key.substr(1);
             //std::cout<<parent->children[i]->label<<" has a parent label: "<<parent->label<<"in the loop \n";
-            parent = findInsertionPoint(key, parent->children[i]);
+            parent = findInsertionPoint(key, parent->children[i], pos+1);
         }
     }
     
@@ -115,7 +115,7 @@ void Trie<ValueType>::insert(const std::string &key, const ValueType &value)
     std::string keyPass = key;
     Node* parent = root;
     
-    parent = findInsertionPoint(keyPass, parent);
+    parent = findInsertionPoint(keyPass, parent, 0);
     
     while (keyPass.length()>0)
     {
@@ -148,34 +148,60 @@ void Trie<ValueType>::dump()
 template<typename ValueType>
 std::vector<ValueType> Trie<ValueType>::find(const std::string key, bool exactMatchOnly) const
 {
-    return(findHelper(key, exactMatchOnly, root));
+    std::vector<ValueType> ir = {};
+    return(findHelper(key, exactMatchOnly, root, ir, 0));
 }
 
 template<typename ValueType>
-std::vector<ValueType> Trie<ValueType>::findHelper(std::string key, bool exactMatchOnly, Node* parent) const
+std::vector<ValueType> Trie<ValueType>::findHelper(std::string key, bool exactMatchOnly, Node* parent, std::vector<ValueType> &ir, int pos) const
 {
-    std::vector<ValueType> ir = {};
     
-    if(key.size() == 0)
+    
+    if(pos == key.length())
     {
-        std::cout<<"RETURN";
+        
+        std::cout<<parent->label;
         
         for (int i = 0; i<parent->values.size(); i++)
+        {
+            std::cout<<parent->values[i]<<"\n";
             ir.push_back(parent->values[i]);
+        }
     }
     
     for (int i = 0; i<parent->children.size(); i++)
     {
+        Node* p = parent->children[i];
         
-        if (parent->children[i]->label == key[0])
+        if (parent->children[i]->label == key[pos])
         {
-            key = key.substr(1);
+            //std::cout<<parent->children[i]->label<<" has a parent label: "<<parent->label<<" in the loop \n";
+            
+            //key = key.substr(1);
             //std::cout<<parent->children[i]->label<<" has a parent label: "<<parent->label<<"in the loop \n";
-            ir = findHelper(key, exactMatchOnly, parent->children[i]);
+            ir = findHelper(key, exactMatchOnly, parent->children[i], ir, pos+1);
+        }
+        else
+        {
+            if (!exactMatchOnly)
+            {
+                
+                //std::cout<<parent->children[i]->label<<" has a parent label: "<<parent->label<<" in the loop \n";
+                
+                
+                
+                if (parent->children[i]->label == 'x')
+                    std::cout<<"Ye";
+                
+                //key = parent->children[i]->label;
+                
+                //key = key.substr(1);
+                
+                std::cout<<"key: "<<key<<" size:: "<<key.size()<<"\n";
+                ir = findHelper(key, true, parent->children[i], ir, pos+1);
+            }
         }
     }
-    
-       
     return (ir);
 }
 
