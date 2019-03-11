@@ -7,6 +7,8 @@
 
 #include <iostream> //delete
 
+int counter = 0;
+
 template<typename ValueType>
 class Trie
 {
@@ -15,7 +17,7 @@ public:
     ~Trie();
     void reset();
     void insert(const std::string& key, const ValueType& value);
-    std::vector<ValueType> find(const std::string& key, bool exactMatchOnly) const;
+    std::vector<ValueType> find(const std::string key, bool exactMatchOnly) const;
 
       // C++11 syntax for preventing copying and assignment
     Trie(const Trie&) = delete;
@@ -27,13 +29,14 @@ private:
     
     struct Node
     {
-        std::string label;
+        Node();
+        char label;
         std::vector<Node*> children;
         std::vector<ValueType> values;
     };
     
     void FreeTree (Node* cur); //Used to delete all nodes in the tree
-    void findInsertionPoint(std::string &key);
+    Node* findInsertionPoint(std::string &key, Node* parent);
     
     Node* root;
     
@@ -50,16 +53,20 @@ template<typename ValueType>
 Trie<ValueType>::Trie()
 {
     root = new Node();
+    root->label = 'r';
     allNodes.push_back(root);
+}
+
+template<typename ValueType>
+Trie<ValueType>::Node::Node()
+{
+    //std::cout<<"made";
 }
 
 template<typename ValueType>
 void Trie<ValueType>::FreeTree(Node* cur)
 {
-    if (cur->children.empty())
-    {
-        return;
-    }
+    
     
     unsigned long size = cur->children.size();
     
@@ -68,8 +75,9 @@ void Trie<ValueType>::FreeTree(Node* cur)
         FreeTree(cur->children[i]);
     }
     
+    std::cout<<cur->label;
     delete cur;
-    
+    //std::cout<<"\n\ndelet\n";
 }
 
 
@@ -77,7 +85,6 @@ void Trie<ValueType>::FreeTree(Node* cur)
 template<typename ValueType>
 Trie<ValueType>::~Trie()
 {
-    Node* p = root;
     FreeTree(root);
 }
 
@@ -89,28 +96,56 @@ void Trie<ValueType>::reset()
 }
 
 template<typename ValueType>
-void Trie<ValueType>::findInsertionPoint(std::string &key, Node* parent)
+typename Trie<ValueType>::Node* Trie<ValueType>::findInsertionPoint(std::string &key, Node* parent)
 {
-    for (int i = 0; i<this->Node.children.size(); i++)
+    
+    
+    std::cout<<"\n\n"<<parent->children.size()<<":size\n";
+    for (int i = 0; i<parent->children.size(); i++)
     {
-        if (this->label == key[0])
+        
+        if (parent->children[i]->label == key[0])
         {
-            findInsertionPoint(key.substr(1));
+            std::cout<<"KEY: "<<key<<"  LABEL: "<<parent->children[i]->label<<"\n";
+            counter++;
+            key = key.substr(1);
+            std::cout<<parent->children[i]->label<<" has a parent label: "<<parent->label<<"in the loop \n";
+            parent = findInsertionPoint(key, parent->children[i]);
         }
     }
     
-    return ;
+    return parent;
 }
 
 
 template<typename ValueType>
 void Trie<ValueType>::insert(const std::string &key, const ValueType &value)
 {
-    Node* x = new Node();
-    allNodes.push_back(x);
-    root->children.push_back(x);
-    x->values.push_back(value);
+    std::string keyPass = key;
+    Node* parent = root;
     
+    parent = findInsertionPoint(keyPass, parent);
+    
+    std::cout<<"keypass: "<<keyPass<<std::endl;
+    
+    //std::cout<<root<< " "<<parent;
+    //std::cout<<"label:"<<parent->label<<"\n";
+    while (keyPass.length()>0)
+    {
+        //std::cout<<"WHO";
+        Node* nodeptr = new Node();
+        nodeptr->label = keyPass[0];
+        parent->children.push_back(nodeptr);
+        std::cout<<nodeptr->label<<" has a parent label: "<<parent->label<<"\n";
+        
+        allNodes.push_back(nodeptr);
+        
+        keyPass = keyPass.substr(1);
+        unsigned long index = parent->children.size();
+        std::cout<<"index is: "<<index<<"\n";
+        parent = parent->children[index-1];
+    }
+    parent->values.push_back(value);
 }
 
 
@@ -119,45 +154,15 @@ void Trie<ValueType>::insert(const std::string &key, const ValueType &value)
 template<typename ValueType>
 void Trie<ValueType>::dump()
 {
-    for (int i = 0; i<1; i++)
+    for (int i = 0; i<allNodes.size(); i++)
     {
-        std::cout<<root->children[i]->values[i];
+        std::cout<<allNodes[i]->label;
     }
+    std::cout<<"\n";
+    std::cout<<"\n!!!"<<allNodes[5]->values[0]<<" "<<allNodes[5]->values[0]<<"\n";
+    
 }
 
 
-template<typename ValueType>
-
-void Trie<ValueType>::printWord(char* str, int n)
-{
-    std::cout<<std::endl;
-    for(int i=0; i<n; i++)
-    {
-        std::cout<<str[i]<<" ";
-    }
-}
-// Print all words in Trie
-template<typename ValueType>
-void Trie<ValueType>::printAllWords(Node* root, char* wordArray, int pos)
-{
-    if(root == NULL)
-        return;
-    
-    if(root->isEndOfWord)
-    {
-        printWord(wordArray, pos);
-    }
-    for(int i=0; i<26; i++)
-    {
-        if(root->child[i] != NULL)
-        {
-            wordArray[pos] = i+'a';
-            printAllWords(root->child[i], wordArray, pos+1);
-        }
-    }
-    
-    
-    
-}
 
 #endif // TRIE_INCLUDED
