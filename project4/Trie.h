@@ -154,12 +154,14 @@ std::vector<ValueType> Trie<ValueType>::find(const std::string key, bool exactMa
 template<typename ValueType>
 std::vector<ValueType> Trie<ValueType>::findHelper(std::string key, bool exactMatchOnly, Node* parent) const
 {
-    std::vector<ValueType> ir ={};
+    std::vector<ValueType> ir = {};
     
     if(key.size() == 0)
     {
         std::cout<<"RETURN";
-        return parent->values;
+        
+        for (int i = 0; i<parent->values.size(); i++)
+            ir.push_back(parent->values[i]);
     }
     
     for (int i = 0; i<parent->children.size(); i++)
@@ -173,6 +175,7 @@ std::vector<ValueType> Trie<ValueType>::findHelper(std::string key, bool exactMa
         }
     }
     
+       
     return (ir);
 }
 
