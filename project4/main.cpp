@@ -15,7 +15,7 @@ void    somefunc()
 {
     
     //    Specify    the    full    path    and    name    of    the    gene    data    file    on    your    hard    drive.
-    string filename    =    "/Users/arnavm/Documents/Xcode Projects/cs32/project4/data/Ferroplasma_acidarmanus.txt";
+    string filename    =    "/Users/arnavm/Documents/Xcode Projects/cs32/project4/data/Halorubrum_chaoviator.txt";
     //    Open    the    data    file    and    get    a    ifstream object    that    can    be    used    to    read    its
     //    contents.
     ifstream    strm(filename);
@@ -24,17 +24,25 @@ void    somefunc()
         cout    <<    "Cannot    open    "    <<    filename    <<    endl;
         return;
     }
-    vector<Genome>    vg;
-    bool    success    =    Genome::load(strm,    vg);        //    Load    the    data    via    the    stream.
-    if    (success)
+    vector<Genome> vg;
+    bool success = Genome::load(strm, vg);        //    Load    the    data    via    the    stream.
+    if (success)
     {
-        cout    <<    "Loaded "    <<    vg.size()    <<    " genomes successfully:" <<    endl;
-        for    (int    k    =    0;    k    !=    vg.size();    k++)
-            cout    <<    vg[k].name()    <<    endl;
+        cout<<"Loaded " <<vg.size()<<" genomes successfully:" <<endl;
+        //for    (int    k    =    0;    k    !=    vg.size();    k++)
+            //cout    <<    vg[k].name()    <<vg[k].length()<<    endl;
+        cout<<vg[0].name()<<vg[0].length()<<endl;
     }
     else
-        cout    <<    "Error    loading    genome    data" <<    endl;
+        cout<<"Error loading genome data"<<endl;
     
+    Genome g("oryx",
+             "GCTCGGNACACATCCGCCGCGGACGGGACGGGATTCGGGCTGTCGATTGTCTCACAGATCGTCGACGTACATGACTGGGA");
+    string    f1,    f2,    f3;
+    bool    result1    =    g.extract(0, 5,    f1);     //    result1    =    true,    f1    =    “GCTCG”;
+    bool    result2 =    g.extract(74, 6,    f2); //    result2 =    true,    f2 =    “CTGGGA”;
+    bool    result3 =    g.extract(74,    7,    f3); //    result3 =    false,    f3 is    unchanged
+    cout<<f1<<" "<<f2<<" "<<result3;
 }
 
 

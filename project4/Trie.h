@@ -155,8 +155,7 @@ std::vector<ValueType> Trie<ValueType>::find(const std::string key, bool exactMa
 template<typename ValueType>
 std::vector<ValueType> Trie<ValueType>::findHelper(std::string key, bool exactMatchOnly, Node* parent, std::vector<ValueType> &ir, int pos) const
 {
-    
-    
+
     if(pos == key.length())
     {
         
@@ -175,29 +174,12 @@ std::vector<ValueType> Trie<ValueType>::findHelper(std::string key, bool exactMa
         
         if (parent->children[i]->label == key[pos])
         {
-            //std::cout<<parent->children[i]->label<<" has a parent label: "<<parent->label<<" in the loop \n";
-            
-            //key = key.substr(1);
-            //std::cout<<parent->children[i]->label<<" has a parent label: "<<parent->label<<"in the loop \n";
             ir = findHelper(key, exactMatchOnly, parent->children[i], ir, pos+1);
         }
         else
         {
             if (!exactMatchOnly)
             {
-                
-                //std::cout<<parent->children[i]->label<<" has a parent label: "<<parent->label<<" in the loop \n";
-                
-                
-                
-                if (parent->children[i]->label == 'x')
-                    std::cout<<"Ye";
-                
-                //key = parent->children[i]->label;
-                
-                //key = key.substr(1);
-                
-                std::cout<<"key: "<<key<<" size:: "<<key.size()<<"\n";
                 ir = findHelper(key, true, parent->children[i], ir, pos+1);
             }
         }

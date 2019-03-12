@@ -21,6 +21,7 @@ private:
 GenomeImpl::GenomeImpl(const string& nm, const string& sequence)
 {
     m_name = nm;
+    m_sequence = sequence;
 }
 
 bool GenomeImpl::load(istream& genomeSource, vector<Genome>& genomes) 
@@ -29,26 +30,49 @@ bool GenomeImpl::load(istream& genomeSource, vector<Genome>& genomes)
     string line;
     string name;
     string concat = "";
-    //getline(genomeSource, line);
-    
+    bool lineAfterNameLine = false;
     while (getline(genomeSource, line))
     {
+        if(line == "")
+            return false;
+        
         if (line[0] != '>' && lineCounter == 0)
         {
             return false;
         }
-        
+
         if(line[0] == '>')
         {
+            if(lineCounter!=0)
+            {
+                if (concat == "")
+                    return false;
+                if (lineAfterNameLine)
+                    return false;
+                genomes.push_back(*(new Genome(name, concat)));
+                concat = "";
+            }
+            
             name = line.substr(1);
+
+            if (name.length() == 0)
+                return false;
             lineCounter++;
+            lineAfterNameLine = true;
             continue;
         }
+        for (int i = 0; i<line.size(); i++)
+            if (line[i]!='A' &&line[i]!='C' &&line[i]!='T' &&line[i]!='G' &&line[i]!='N')
+                return false;
+        
         concat+=line;
         
+        lineAfterNameLine = false;
     }
-    
-    
+    if (name == "")
+        return false;
+    if (lineAfterNameLine)
+        return false;
     genomes.push_back(*(new Genome(name, concat)));
     
     
@@ -58,6 +82,7 @@ bool GenomeImpl::load(istream& genomeSource, vector<Genome>& genomes)
 
 int GenomeImpl::length() const
 {
+    //cout<<m_sequence;
     return m_sequence.size();  // This compiles, but may not be correct
 }
 
@@ -68,7 +93,13 @@ string GenomeImpl::name() const
 
 bool GenomeImpl::extract(int position, int length, string& fragment) const
 {
-    return false;  // This compiles, but may not be correct
+    if (position<0 || length<1 || position+length>this->length())
+        return false;
+    
+    fragment = m_sequence.substr(position, length);
+    
+    return true;
+        
 }
 
 //******************** Genome functions ************************************
