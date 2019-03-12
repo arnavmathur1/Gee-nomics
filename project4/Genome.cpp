@@ -14,26 +14,56 @@ public:
     string name() const;
     bool extract(int position, int length, string& fragment) const;
 private:
+    string m_name;
+    string m_sequence;
 };
 
 GenomeImpl::GenomeImpl(const string& nm, const string& sequence)
 {
-    // This compiles, but may not be correct
+    m_name = nm;
 }
 
 bool GenomeImpl::load(istream& genomeSource, vector<Genome>& genomes) 
 {
-    return false;  // This compiles, but may not be correct
+    int lineCounter = 0;
+    string line;
+    string name;
+    string concat = "";
+    //getline(genomeSource, line);
+    
+    while (getline(genomeSource, line))
+    {
+        if (line[0] != '>' && lineCounter == 0)
+        {
+            return false;
+        }
+        
+        if(line[0] == '>')
+        {
+            name = line.substr(1);
+            lineCounter++;
+            continue;
+        }
+        concat+=line;
+        
+    }
+    
+    
+    genomes.push_back(*(new Genome(name, concat)));
+    
+    
+    
+    return true;  // This compiles, but may not be correct
 }
 
 int GenomeImpl::length() const
 {
-    return 0;  // This compiles, but may not be correct
+    return m_sequence.size();  // This compiles, but may not be correct
 }
 
 string GenomeImpl::name() const
 {
-    return "";  // This compiles, but may not be correct
+    return m_name;  // This compiles, but may not be correct
 }
 
 bool GenomeImpl::extract(int position, int length, string& fragment) const
