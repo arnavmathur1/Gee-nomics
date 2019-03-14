@@ -20,13 +20,13 @@ public:
     
 private:
     int m_minSearchLength;
-    Trie<string>* t;
+    Trie<DNAMatch>* t;
 };
 
 GenomeMatcherImpl::GenomeMatcherImpl(int minSearchLength)
 {
     m_minSearchLength = minSearchLength;
-    t = new Trie<string>;
+    t = new Trie<DNAMatch>;
 }
 
 void GenomeMatcherImpl::addGenome(const Genome& genome)
@@ -38,8 +38,11 @@ void GenomeMatcherImpl::addGenome(const Genome& genome)
         
         if (!result)
             return;
-        char ichar = '0' + i;
-        t->insert(fragment, (genome.name()+", Pos " + ichar));
+        DNAMatch toInsert;
+        toInsert.genomeName = genome.name();
+        toInsert.length = genome.length();
+        toInsert.position = i;
+        t->insert(fragment, toInsert);
     }
 }
 
