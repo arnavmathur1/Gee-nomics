@@ -1,9 +1,12 @@
 #include "provided.h"
+#include "Trie.h"
 #include <string>
 #include <vector>
 #include <iostream>
 #include <fstream>
 using namespace std;
+
+
 
 class GenomeMatcherImpl
 {
@@ -13,23 +16,36 @@ public:
     int minimumSearchLength() const;
     bool findGenomesWithThisDNA(const string& fragment, int minimumLength, bool exactMatchOnly, vector<DNAMatch>& matches) const;
     bool findRelatedGenomes(const Genome& query, int fragmentMatchLength, bool exactMatchOnly, double matchPercentThreshold, vector<GenomeMatch>& results) const;
+    
+    
 private:
     int m_minSearchLength;
+    Trie<string>* t;
 };
 
 GenomeMatcherImpl::GenomeMatcherImpl(int minSearchLength)
 {
     m_minSearchLength = minSearchLength;
+    t = new Trie<string>;
 }
 
 void GenomeMatcherImpl::addGenome(const Genome& genome)
 {
-    // This compiles, but may not be correct
+    for(int i = 0;;i++)
+    {
+        string fragment = "";
+        bool result = genome.extract(i, m_minSearchLength, fragment);
+        
+        if (!result)
+            return;
+        char ichar = '0' + i;
+        t->insert(fragment, (genome.name()+", Pos " + ichar));
+    }
 }
 
 int GenomeMatcherImpl::minimumSearchLength() const
 {
-    return 0;  // This compiles, but may not be correct
+    return m_minSearchLength; 
 }
 
 bool GenomeMatcherImpl::findGenomesWithThisDNA(const string& fragment, int minimumLength, bool exactMatchOnly, vector<DNAMatch>& matches) const

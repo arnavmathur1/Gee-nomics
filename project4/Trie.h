@@ -4,8 +4,7 @@
 #include <string>
 #include <vector>
 
-
-#include <iostream> //delete
+#include <iostream>
 
 template<typename ValueType>
 class Trie
@@ -21,7 +20,7 @@ public:
     Trie(const Trie&) = delete;
     Trie& operator=(const Trie&) = delete;
     
-    void dump();//REMOVE, I REPEAT: REMOVE
+    
     
 private:
     
@@ -133,17 +132,6 @@ void Trie<ValueType>::insert(const std::string &key, const ValueType &value)
 
 
 
-
-template<typename ValueType>
-void Trie<ValueType>::dump()
-{
-    for (int i = 0; i<allNodes.size(); i++)
-    {
-        std::cout<<allNodes[i]->label;
-    }
-    
-    
-}
 
 template<typename ValueType>
 std::vector<ValueType> Trie<ValueType>::find(const std::string key, bool exactMatchOnly) const

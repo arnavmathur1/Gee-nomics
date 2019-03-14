@@ -5,6 +5,7 @@
 #include <istream>
 using namespace std;
 
+
 class GenomeImpl
 {
 public:
@@ -79,6 +80,7 @@ bool GenomeImpl::load(istream& genomeSource, vector<Genome>& genomes)
     
     return true;  // This compiles, but may not be correct
 }
+
 
 int GenomeImpl::length() const
 {
