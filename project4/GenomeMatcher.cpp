@@ -99,13 +99,8 @@ bool GenomeMatcherImpl::findGenomesWithThisDNA(const string& fragment, int minim
     for (int i = 0; i<tempsize; i++)
     {
         unordered_map<string,Genome*>::const_iterator cur;
+
         
-       //cur = umap.find (matches[i].genomeName);
-        
-        cout<<matches[i].position;
-        
-        
-        cout<<umap.find(matches[i].genomeName)->second->name();
         string bigone = "";
         umap.find (matches[i].genomeName)->second->extract(matches[i].position, umap.find(matches[i].genomeName)->second->length()-matches[i].position, bigone);
         
@@ -122,15 +117,18 @@ bool GenomeMatcherImpl::findGenomesWithThisDNA(const string& fragment, int minim
         //matches[i] = cur->second->extract(matches[i].position, len, bigone);
         
         matches[i].length = len;
-        
-        
-        
     }
     
     
-    
-    //if (len<minimumLength)
-        //matches.erase(matches.begin() + i);
+    for (vector<DNAMatch>::iterator it = matches.begin(); it!=matches.end(); it++)
+    {
+        if (it->length<minimumLength)
+        {
+            matches.erase(it);
+            it--;
+        }
+        
+    }
     
     if (matches.empty())
         return false;
