@@ -5,7 +5,7 @@
 //  Created by Arnav Mathur on 3/8/19.
 //  Copyright © 2019 Arnav Mathur. All rights reserved.
 //
-/*
+
 #include "Trie.h"
 #include "provided.h"
 #include <iostream>
@@ -49,45 +49,47 @@ void    somefunc()
 
 void someFuncToo()
 {
-    Genome g1("Genome 1", "ACTG");
-    Genome g2("Genome 2", "TCGACT");
-    Genome g3("Genome 3", "TCTCG");
+    Genome g1("Genome 1", "CGGTGTACNACGACTGGGGATAGAATATCTTGACGTCGTACCGGTTGTAGTCGTTCGACCGAAGGGTTCCGCGCCAGTAC");
+    Genome g2("Genome 2", "TAACAGAGCGGTNATATTGTTACGAATCACGTGCGAGACTTAGAGCCAGAATATGAAGTAGTGATTCAGCAACCAAGCGG");
+    Genome g3("Genome 3", "TTTTGAGCCAGCGACGCGGCTTGCTTAACGAAGCGGAAGAGTAGGTTGGACACATTNGGCGGCACAGCGCTTTTGAGCCA");
     
-    GenomeMatcher* g = new GenomeMatcher(3);
+    GenomeMatcher* g = new GenomeMatcher(4);
     
     g->addGenome(g1);
     g->addGenome(g2);
     g->addGenome(g3);
-    vector<string> v;
+    
+    vector<DNAMatch> v;
+    
+    g->findGenomesWithThisDNA("GTACNA",    6,    true,    v);
+    
+    for (int i = 0; i<v.size(); i++)
+        cout<<v[i].genomeName<<" "<<v[i].length<<" "<<v[i].position<<endl;
     //v = g->t->find("ACT", true);
+}
+
+void sf3()
+{
+    Trie<int>* x = new Trie<int>;
+    
+    x->insert("abc", 3);
+    
+    
+    vector<int> q;
+    q = x->find("abc", true);
+    
+    for (int i = 0; i<q.size(); i++)
+        //cout<<q[i].genomeName<<" "<<q[i].length<<" "<<q[i].position<<endl;
+        cout<<q[i];
 }
 
 int main()
 {
  
-    Trie<int> t;
-    
-    t.insert("o", 1);
-    //t.insert("ab", 2);
-    t.insert("qax", 3);
-    t.insert("qax", 5);
-    t.insert("qaz", 22);
-    t.insert("qaz", 22);
-    t.insert("qaz", 22);
-    t.insert("qa", 19);
-    t.insert("qbz", 21);
-    t.insert("qaf", 20);
-    
-    //t.dump();
-    
-    std::vector<int> x = t.find("qbx", false);
-    
-    for (int i = 0; i<x.size(); i++)
-        std::cout<<x[i]<<" ";
  
     someFuncToo();
     
-}*/
+}/*
 
 #include "provided.h"
 #include <iostream>
@@ -407,3 +409,4 @@ int main()
     }
 }
 
+*/

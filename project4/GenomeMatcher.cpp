@@ -2,6 +2,7 @@
 #include "Trie.h"
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include <iostream>
 #include <fstream>
 using namespace std;
@@ -21,16 +22,27 @@ public:
 private:
     int m_minSearchLength;
     Trie<DNAMatch>* t;
+    vector<Genome> genomes;
+    unordered_map<string, const Genome*> umap;
 };
 
 GenomeMatcherImpl::GenomeMatcherImpl(int minSearchLength)
 {
     m_minSearchLength = minSearchLength;
     t = new Trie<DNAMatch>;
+    genomes = {};
 }
 
 void GenomeMatcherImpl::addGenome(const Genome& genome)
 {
+    
+    genomes.push_back(genome);
+    string name = genome.name();
+    
+    const Genome* gptr = &genome;
+    
+    umap[name] = gptr;
+    
     for(int i = 0;;i++)
     {
         string fragment = "";
@@ -40,20 +52,90 @@ void GenomeMatcherImpl::addGenome(const Genome& genome)
             return;
         DNAMatch toInsert;
         toInsert.genomeName = genome.name();
-        toInsert.length = genome.length();
+        toInsert.length = fragment.length();
         toInsert.position = i;
         t->insert(fragment, toInsert);
     }
+    
+    
+    
 }
 
 int GenomeMatcherImpl::minimumSearchLength() const
 {
-    return m_minSearchLength; 
+    return m_minSearchLength;
 }
 
 bool GenomeMatcherImpl::findGenomesWithThisDNA(const string& fragment, int minimumLength, bool exactMatchOnly, vector<DNAMatch>& matches) const
 {
-    return false;  // This compiles, but may not be correct
+    if (fragment.length()<minimumLength || minimumLength<minimumSearchLength())
+    {
+        return false;
+    }
+    
+    
+    
+    vector<DNAMatch> temp;
+    string f = fragment.substr(0, minimumSearchLength());
+    matches = t->find(f, exactMatchOnly);
+    
+    
+    
+    /*
+    for (int i = 0; i+minimumLength<=fragment.length(); i++)
+    {
+        string f = fragment.substr(0, i+minimumLength);
+        
+        temp = t->find(f, exactMatchOnly);
+        
+        for (int i = 0; i<temp.size(); i++)
+        {
+            matches.push_back(temp[i]);
+        }
+    }*/
+    
+    int tempsize = matches.size();
+    
+    for (int i = 0; i<tempsize; i++)
+    {
+        unordered_map<string,Genome*>::const_iterator cur;
+        
+       //cur = umap.find (matches[i].genomeName);
+        
+        cout<<matches[i].position;
+        
+        
+        cout<<umap.find(matches[i].genomeName)->second->name();
+        string bigone = "";
+        umap.find (matches[i].genomeName)->second->extract(matches[i].position, umap.find(matches[i].genomeName)->second->length()-matches[i].position, bigone);
+        
+        int len = 0;
+        
+        for (int j = 0; j<fragment.length(); j++)
+        {
+            if (bigone[j]!=fragment[j])
+                break;
+            
+            len++;
+        }
+        
+        //matches[i] = cur->second->extract(matches[i].position, len, bigone);
+        
+        matches[i].length = len;
+        
+        
+        
+    }
+    
+    
+    
+    //if (len<minimumLength)
+        //matches.erase(matches.begin() + i);
+    
+    if (matches.empty())
+        return false;
+    
+    return true;
 }
 
 bool GenomeMatcherImpl::findRelatedGenomes(const Genome& query, int fragmentMatchLength, bool exactMatchOnly, double matchPercentThreshold, vector<GenomeMatch>& results) const

@@ -35,7 +35,7 @@ private:
     
     void FreeTree (Node* cur); //Used to delete all nodes in the tree
     Node* findInsertionPoint(std::string &key, Node* parent, int pos);
-    std::vector<ValueType> findHelper(std::string key, bool exactMatchOnly, Node* parent, std::vector<ValueType> &ir, int pos) const;
+    std::vector<ValueType> findHelper(std::string key, bool exactMatchOnly, Node* parent, std::vector<ValueType> &ir, int position) const;
     
     Node* root;
     
@@ -68,7 +68,7 @@ void Trie<ValueType>::FreeTree(Node* cur)
         FreeTree(cur->children[i]);
     }
     
-    std::cout<<cur->label;
+    std::cout<<cur->label<<"\n";
     delete cur;
     
 }
@@ -112,6 +112,7 @@ template<typename ValueType>
 void Trie<ValueType>::insert(const std::string &key, const ValueType &value)
 {
     std::string keyPass = key;
+    //std::string keyPass2 = key;
     Node* parent = root;
     
     parent = findInsertionPoint(keyPass, parent, 0);
@@ -141,34 +142,32 @@ std::vector<ValueType> Trie<ValueType>::find(const std::string key, bool exactMa
 }
 
 template<typename ValueType>
-std::vector<ValueType> Trie<ValueType>::findHelper(std::string key, bool exactMatchOnly, Node* parent, std::vector<ValueType> &ir, int pos) const
+std::vector<ValueType> Trie<ValueType>::findHelper(std::string key, bool exactMatchOnly, Node* parent, std::vector<ValueType> &ir, int position) const
 {
 
-    if(pos == key.length())
+    if((position) == key.length())
     {
         
-        std::cout<<parent->label;
-        
+        //std::cout<<parent->label;
         for (int i = 0; i<parent->values.size(); i++)
         {
-            std::cout<<parent->values[i]<<"\n";
+            
             ir.push_back(parent->values[i]);
         }
     }
     
+    int x = parent->children.size();
     for (int i = 0; i<parent->children.size(); i++)
     {
-        Node* p = parent->children[i];
-        
-        if (parent->children[i]->label == key[pos])
+        if (parent->children[i]->label == key[position])
         {
-            ir = findHelper(key, exactMatchOnly, parent->children[i], ir, pos+1);
+            ir = findHelper(key, exactMatchOnly, parent->children[i], ir, (position+1));
         }
         else
         {
             if (!exactMatchOnly)
             {
-                ir = findHelper(key, true, parent->children[i], ir, pos+1);
+                ir = findHelper(key, true, parent->children[i], ir, position+1);
             }
         }
     }
