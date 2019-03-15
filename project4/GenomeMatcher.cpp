@@ -77,7 +77,7 @@ bool GenomeMatcherImpl::findGenomesWithThisDNA(const string& fragment, int minim
     
     vector<DNAMatch> temp;
     string f = fragment.substr(0, minimumSearchLength());
-    matches = t->find(f, exactMatchOnly);
+    matches = t->find(f, true);
     
     
     
@@ -105,11 +105,27 @@ bool GenomeMatcherImpl::findGenomesWithThisDNA(const string& fragment, int minim
         umap.find (matches[i].genomeName)->second->extract(matches[i].position, umap.find(matches[i].genomeName)->second->length()-matches[i].position, bigone);
         
         int len = 0;
+        bool snippable = false;
+        
+        if (!exactMatchOnly)
+        {
+            snippable = true;
+        }
+
         
         for (int j = 0; j<fragment.length(); j++)
         {
             if (bigone[j]!=fragment[j])
+            {
+                if (snippable)
+                {
+                    snippable = false;
+                    len++;
+                    continue;
+                }
+                
                 break;
+            }
             
             len++;
         }

@@ -61,7 +61,7 @@ void someFuncToo()
     
     vector<DNAMatch> v;
     
-    g->findGenomesWithThisDNA("GTACNA",    6,    true,    v);
+    g->    findGenomesWithThisDNA("GAATAC",    6,    false,    v);
     
     for (int i = 0; i<v.size(); i++)
         cout<<v[i].genomeName<<" "<<v[i].length<<" "<<v[i].position<<endl;
